@@ -25,9 +25,11 @@ or instruction telling the model to read files is needed.
 
 ## Local setup
 
-Requires Node.js 24 or newer.
+Requires Node.js 24.
 
 ```sh
+git clone https://github.com/eddieysong/eve-test.git
+cd eve-test
 npm install
 npx eve link
 npm run dev
@@ -53,10 +55,30 @@ EVE_SESSION_ID='the-printed-session-id' npm run chat -- "What would you like you
 The CLI itself reads environment variables from its process; it doesn't load
 `.env.local`. The Eve server loads its own credentials.
 
+## Test on Vercel
+
+Production: https://eve-test-eddieysongs-projects.vercel.app
+
+For testing with the development credentials from `npx eve link`, use the preview
+deployment below. Run this from the linked repository folder:
+
+```sh
+EVE_URL=https://eve-test-o8dwqkq2g-eddieysongs-projects.vercel.app \
+  node --env-file=.env.local scripts/chat.mjs "Hello. Who are you?"
+```
+
+This runs the agent on Vercel; only the client runs locally. The client uses
+`VERCEL_OIDC_TOKEN` from `.env.local` for agent authentication and Vercel's trusted
+OIDC header. Refresh expired credentials by running `npx eve link` again.
+Development credentials target the same project's preview deployment by default;
+production can require an explicit Trusted Sources policy.
+
 ## Deploy to Vercel
 
-Import `eddieysong/eve-test`, select Node.js 24, and keep the repository's build
-settings. Alternatively, after linking:
+The initial deployment was uploaded directly. Git-based automatic deployments
+are not connected yet: Vercel requires the account's GitHub Login Connection.
+After connecting it, import `eddieysong/eve-test`, select Node.js 24, and keep the
+repository's build settings. Alternatively, after linking:
 
 ```sh
 npm run build
@@ -85,10 +107,11 @@ Do not put private conversation logs or personal memories in this public reposit
 
 ## Verification status
 
-Source files and CLI syntax were checked locally. Dependency installation and an
-Eve build were blocked by local npm DNS/network access. No successful live model
-call or Vercel deployment has been verified yet. Vercel workspace authorization
-is still required before deployment.
+Source files and CLI syntax were checked locally. Dependency installation was
+blocked by local npm DNS/network access, but Vercel successfully installed and
+built the app. Production and preview deployments of commit
+`4a5c61e52f847ba75da0e7e4d4100cdef475e0ce` reached READY on October 29, 2026.
+A live model conversation has not yet been verified.
 
 Eve is pinned to 0.88.0, matching the inspected source version. After installation,
 commit the generated lockfile. Read the installed `node_modules/eve/docs` when
