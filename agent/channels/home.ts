@@ -31,9 +31,9 @@ function protectedRoute(handler: Handler): Handler {
 
 export default defineChannel({
   routes: [
-    GET("/", protectedRoute(() => new Response(html, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'" } }))),
-    GET("/companion/client", protectedRoute(() => new Response(javascript, { headers: { ...headers, "content-type": "text/javascript" } }))),
-    GET("/companion/style", protectedRoute(() => new Response(css, { headers: { ...headers, "content-type": "text/css" } }))),
+    GET("/", protectedRoute(async () => new Response(html, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'" } }))),
+    GET("/companion/client", protectedRoute(async () => new Response(javascript, { headers: { ...headers, "content-type": "text/javascript" } }))),
+    GET("/companion/style", protectedRoute(async () => new Response(css, { headers: { ...headers, "content-type": "text/css" } }))),
     GET("/companion/notes", protectedRoute(async request => {
       const query = z.string().max(200).parse(new URL(request.url).searchParams.get("q") ?? "");
       return Response.json(await searchNotes(query), { headers });

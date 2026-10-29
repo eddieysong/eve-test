@@ -80,6 +80,7 @@ invocation may require a new chat after restarting; the Markdown files persist.
 ## Checks
 
 ```sh
+npm run typecheck
 npm test
 npm run build
 ```
