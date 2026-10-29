@@ -9,6 +9,9 @@ if (!message) {
 try {
   const client = new Client({
     baseUrl: process.env.EVE_URL ?? "http://127.0.0.1:2000",
+    ...(process.env.VERCEL_OIDC_TOKEN
+      ? { auth: { vercelOidc: { token: () => process.env.VERCEL_OIDC_TOKEN } } }
+      : {}),
     ...(process.env.EVE_BEARER_TOKEN
       ? { headers: { Authorization: `Bearer ${process.env.EVE_BEARER_TOKEN}` } }
       : {}),
