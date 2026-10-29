@@ -8,7 +8,8 @@ placeholders; no character or personal memories are invented for you.
 - Browser chat with streaming replies, stop, and new conversation.
 - Resume the current conversation after a page reload in the same browser.
 - Edit `identity.md`, `soul.md`, and `memory.md` beside the conversation.
-- Memory tools let the agent read, save, correct, and forget notes.
+- Core memory tools maintain the short, always-loaded `memory.md`.
+- A Notes panel and note tools save, search, read, edit, and delete detailed notes.
 - Memory is recalled in new conversations; identity updates apply on the next
   model call without restarting Eve.
 
@@ -90,3 +91,30 @@ Existing Vercel OIDC authentication remains on Eve's session routes.
 
 Proactive messaging, cron tasks, computer use, and deeper retrieval are later
 increments. Default agent tools remain disabled.
+
+## Detailed notes
+
+The Notes tab shows saved notes with a title, Markdown body, tags, timestamps,
+and whether they came from a conversation. Try asking:
+
+> Save a note titled “Companion project” about the decisions we made today.
+
+Then start a new chat and ask it to find that note. The agent has
+`memory__save_note`, `memory__search_notes`, `memory__read_note`,
+`memory__update_note`, and `memory__delete_note`. Search uses case-insensitive
+words across titles, tags, and bodies, returning at most 50 summaries; the
+agent reads full notes only when needed. There are no embeddings or automatic
+background extraction yet.
+
+Notes are local records in `.companion/notes/<id>.json`. Each body is limited
+to 16 KiB. They are separate from the always-loaded `memory.md` and survive
+restarts. Deletion removes the title and content and leaves an ID-only
+tombstone to prevent an old save request from bringing it back. Earlier
+conversation transcripts are not erased by deleting a note.
+
+The editor uses version checks to prevent overwriting a newer agent edit.
+If a conflict occurs, reopen the note and reconcile your edits. Keep a copy
+of unsaved text before reloading. All note APIs use the same local auth and
+same-origin write checks as the file editor. This remains a single-user
+local prototype; each customer will need a separate authenticated scope
+before cloud or multi-user use.

@@ -10,3 +10,5 @@ dist/
 
 .companion/
 agent/lib/web/client.bundle.js
+
+.companion

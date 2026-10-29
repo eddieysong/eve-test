@@ -1,7 +1,9 @@
+import { createNotesPanel } from "./notes-panel.js";
 import { SessionStore } from "eve/client";
 import { openInteractions } from "eve/events";
 
 const $ = id => document.getElementById(id);
+const notesPanel = createNotesPanel();
 const cacheKey = "companion-chat-v1";
 let saved = {};
 try { saved = JSON.parse(localStorage.getItem(cacheKey) || "{}"); } catch { /* Start fresh if storage is unavailable. */ }
@@ -54,7 +56,10 @@ function render() {
   catch { storageWarning = true; }
 }
 store.subscribe(render);
-store.setCallbacks({ onFinish: () => { if (currentFile === "memory.md" && !dirty) void loadFile(currentFile); } });
+store.setCallbacks({ onFinish: () => {
+  if (currentFile === "memory.md" && !dirty) void loadFile(currentFile);
+  void notesPanel.refresh();
+} });
 store.observe();
 render();
 if (saved.session) void store.resume().catch(showChatError);

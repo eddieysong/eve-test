@@ -3,6 +3,7 @@ import { defineTool } from "eve/tools";
 import { z } from "zod";
 import { readCompanionDocument } from "./lib/documents.ts";
 import { writeDocument } from "./lib/local-store.ts";
+import { notesTools } from "./lib/notes-tools.ts";
 
 export default defineMemory({
   description: "Durable notes the user wants you to remember across conversations.",
@@ -16,6 +17,7 @@ export default defineMemory({
     },
     async tools() {
       return {
+        ...notesTools(),
         read_memory: defineTool({
           description: "Read the current memory.md and its version before updating it.",
           inputSchema: z.object({}),
