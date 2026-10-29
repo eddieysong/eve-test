@@ -13,8 +13,9 @@
     "chat": "node scripts/chat.mjs"
   },
   "dependencies": {
-    "eve": "0.88.0",
+    "@openrouter/ai-sdk-provider": "3.1.0",
     "ai": "^7.0.137",
+    "eve": "0.88.0",
     "zod": "4.5.4"
   }
 }

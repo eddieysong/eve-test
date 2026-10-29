@@ -30,15 +30,23 @@ Requires Node.js 24.
 ```sh
 git clone https://github.com/eddieysong/eve-test.git
 cd eve-test
-npm install
-npx eve link
+npm ci
+# Create .env.local only if it does not already exist.
+[ -f .env.local ] || cp .env.example .env.local
+# Set OPENROUTER_API_KEY in .env.local, then:
 npm run dev
 ```
 
-Choose the personal Vercel workspace and the `eve-test` project when linking.
-The link command pulls local model credentials into `.env.local`.
-Alternatively, Eve's terminal `/login` flow can configure a supported model provider.
-Never commit credentials.
+Model calls go directly to OpenRouter using `OPENROUTER_API_KEY`. Vercel AI
+Gateway is not used for inference; no Vercel model billing setup is required.
+The default model is `anthropic/claude-sonnet-5`. Change `OPENROUTER_MODEL` in
+`.env.local` to try another OpenRouter model. The context budget defaults to
+200,000 tokens; set `OPENROUTER_CONTEXT_WINDOW` at or below the selected model's
+supported context length. Restart the dev server after changing environment variables.
+
+If you already have `.env.local`, add these values without overwriting its other
+entries. Keep the key server-side and never commit it. `eve link` is optional for
+local conversations; it is used when accessing or deploying the Vercel service.
 
 The terminal supports conversation directly. From a second terminal in this folder:
 
@@ -55,46 +63,50 @@ EVE_SESSION_ID='the-printed-session-id' npm run chat -- "What would you like you
 The CLI itself reads environment variables from its process; it doesn't load
 `.env.local`. The Eve server loads its own credentials.
 
-## Test on Vercel
+## Deploy and test on Vercel
 
-Production: https://eve-test-eddieysongs-projects.vercel.app
+Project: https://vercel.com/eddieysongs-projects/eve-test
 
-For testing with the development credentials from `npx eve link`, use the preview
-deployment below. Run this from the linked repository folder:
-
-```sh
-EVE_URL=https://eve-test-o8dwqkq2g-eddieysongs-projects.vercel.app \
-  node --env-file=.env.local scripts/chat.mjs "Hello. Who are you?"
-```
-
-This runs the agent on Vercel; only the client runs locally. The client uses
-`VERCEL_OIDC_TOKEN` from `.env.local` for agent authentication and Vercel's trusted
-OIDC header. Refresh expired credentials by running `npx eve link` again.
-Development credentials target the same project's preview deployment by default;
-production can require an explicit Trusted Sources policy.
-
-## Deploy to Vercel
+Before deploying this version, add `OPENROUTER_API_KEY` to the project's
+Production and Preview environment variables. Optionally add `OPENROUTER_MODEL`
+and `OPENROUTER_CONTEXT_WINDOW` to override the defaults. Redeploy after changing
+environment variables. Local `.env.local` credentials are not uploaded.
 
 The initial deployment was uploaded directly. Git-based automatic deployments
-are not connected yet: Vercel requires the account's GitHub Login Connection.
-After connecting it, import `eddieysong/eve-test`, select Node.js 24, and keep the
-repository's build settings. Alternatively, after linking:
+are not connected yet. To deploy from your checkout, link the existing `eve-test`
+project in the personal workspace, then deploy:
 
 ```sh
-npm run build
+npx eve link
 npx eve deploy
 ```
 
-On Vercel, Eve writes its deployment bundle to `.vercel/output`. Model calls use
-AI Gateway with project OIDC; the account needs available model access/credits.
+If linking refreshes `.env.local`, ensure your OpenRouter settings remain present
+before running locally again. On Vercel, Eve writes its deployment bundle to
+`.vercel/output`. Vercel hosts the agent; OpenRouter handles model inference.
 
-Health endpoint: `/eve/v1/health`.
-The deployment is an agent service, not a browser chat website.
+Production URL: https://eve-test-eddieysongs-projects.vercel.app
 
-The authored HTTP channel accepts Vercel OIDC and local development authentication.
-It is not an anonymous public chat endpoint. A browser UI and personal login are
-future additions. Deployment Protection and the agent's route authentication are
-separate checks; passing one does not imply passing the other.
+The existing production and preview deployments still contain the earlier
+Gateway configuration until this change is deployed. Do not use the earlier
+preview URL to test OpenRouter.
+
+The service exposes `/eve/v1/health` and authenticated session routes, without a
+browser chat UI. The HTTP channel accepts Vercel OIDC and local development auth.
+Vercel OIDC authenticates callers to the agent; it is independent of OpenRouter's
+API key. Deployment Protection and agent route authentication are separate checks.
+
+After creating a new preview deployment, use its URL with the script:
+
+```sh
+EVE_URL=https://YOUR-NEW-PREVIEW.vercel.app \
+  node --env-file=.env.local scripts/chat.mjs "Hello. Who are you?"
+```
+
+The script uses `VERCEL_OIDC_TOKEN` from the linked project's development
+credentials for agent authentication and Vercel's trusted OIDC header. Development
+credentials normally target that project's previews; production may require an
+explicit Trusted Sources policy. Only the client runs locally in this example.
 
 ## Memory and scope
 
@@ -107,15 +119,20 @@ Do not put private conversation logs or personal memories in this public reposit
 
 ## Verification status
 
-Source files and CLI syntax were checked locally. Dependency installation was
-blocked by local npm DNS/network access, but Vercel successfully installed and
-built the app. Production and preview deployments of commit
-`4a5c61e52f847ba75da0e7e4d4100cdef475e0ce` reached READY on October 29, 2026.
-A live model conversation has not yet been verified.
+The OpenRouter version installs and builds successfully with Eve 0.88.0. A mocked
+model call verified that the configured agent sends requests directly to
+`https://openrouter.ai/api/v1/chat/completions` with `OPENROUTER_API_KEY` and parses
+the response. A live OpenRouter reply has not been tested because no key was
+provided. The production and preview deployments of the earlier Gateway version
+reached READY on October 29, 2026; this provider change still needs deployment
+with the OpenRouter key configured.
 
-Eve is pinned to 0.88.0, matching the inspected source version. After installation,
-commit the generated lockfile. Read the installed `node_modules/eve/docs` when
-making API changes.
+The local build warns that no production sandbox provider is available without
+Docker or Vercel. This companion has default tools disabled and uses no sandbox
+tools. Build for the target environment when deploying.
 
-Docs: https://eve.dev/docs/instructions and
+Dependencies are locked in `package-lock.json`. Read the installed
+`node_modules/eve/docs` when making API changes.
+
+Docs: https://eve.dev/docs/agent-config and
 https://eve.dev/docs/guides/deployment/vercel
