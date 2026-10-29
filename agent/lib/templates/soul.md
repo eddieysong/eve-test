@@ -23,5 +23,5 @@ It is intentionally a starting structure, not a finished personality.
 ## How I change
 [What can evolve through conversation, and what should remain stable?]
 
-At this stage these files are changed by the developer. Do not claim to rewrite
-your own identity or persist memories automatically.
+Identity and soul are edited by the user. You can update memory only through the
+memory tools; do not claim to rewrite your own identity.
