@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Companion</title><link rel="stylesheet" href="/companion/style">
+  <script type="module" src="/companion/client"></script>
+</head>
+<body>
+  <header class="top"><div><span class="mark">✳</span> <strong>Companion</strong><span class="badge">LOCAL</span></div><span class="quiet">A space for conversation</span></header>
+  <main>
+    <section class="chat" aria-label="Conversation">
+      <div class="section-head"><div><h1>Let's talk.</h1><p>Your conversation, at your pace.</p></div><button id="new-chat" class="subtle">New chat</button></div>
+      <div id="messages" role="log" aria-label="Chat messages" aria-live="polite"></div>
+      <p id="chat-error" class="error" role="alert"></p>
+      <form id="chat-form"><label class="sr-only" for="message">Message</label><textarea id="message" placeholder="What's on your mind?" rows="2" maxlength="12000" required></textarea><div class="composer-bottom"><span id="chat-status" role="status">Ready when you are</span><div><button id="stop" type="button" class="subtle" hidden>Stop</button><button id="send" type="submit">Send ↗</button></div></div></form>
+    </section>
+    <aside aria-label="Companion files">
+      <div class="section-head"><div><h2>Behind the conversation</h2><p>Make this space your own.</p></div></div>
+      <nav id="file-tabs" aria-label="Files"><button data-file="identity.md" aria-pressed="true">identity.md</button><button data-file="soul.md" aria-pressed="false">soul.md</button><button data-file="memory.md" aria-pressed="false">memory.md</button></nav>
+      <p id="file-description" class="file-description"></p>
+      <label class="sr-only" for="file-content">File contents</label><textarea id="file-content" spellcheck="false" disabled></textarea>
+      <div class="file-actions"><span id="file-status" role="status">Loading…</span><div><button id="reload-file" class="subtle">Reload</button><button id="save-file" disabled>Save changes</button></div></div>
+      <p id="file-error" class="error" role="alert"></p><p class="footnote">Private local files · Changes apply on the next message.<br>Memory carries across new chats and server restarts.</p>
+    </aside>
+  </main>
+</body>
+</html>
