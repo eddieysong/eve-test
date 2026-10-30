@@ -1,8 +1,10 @@
+import { setupPaneResize } from "./pane-resize.js";
 import { createNotesPanel } from "./notes-panel.js";
 import { SessionStore } from "eve/client";
 import { openInteractions } from "eve/events";
 
 const $ = id => document.getElementById(id);
+setupPaneResize();
 const notesPanel = createNotesPanel();
 const cacheKey = "companion-chat-v1";
 let saved = {};
