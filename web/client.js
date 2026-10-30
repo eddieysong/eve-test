@@ -1,10 +1,12 @@
 import { setupPaneResize } from "./pane-resize.js";
+import { setupWorkspacePanel } from "./workspace-panel.js";
 import { createNotesPanel } from "./notes-panel.js";
 import { SessionStore } from "eve/client";
 import { openInteractions } from "eve/events";
 
 const $ = id => document.getElementById(id);
 setupPaneResize();
+setupWorkspacePanel();
 const notesPanel = createNotesPanel();
 const cacheKey = "companion-chat-v1";
 let saved = {};

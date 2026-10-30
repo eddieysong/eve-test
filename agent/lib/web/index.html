@@ -6,17 +6,18 @@
   <script type="module" src="/companion/client"></script>
 </head>
 <body>
-  <header class="top"><div><span class="mark">✳</span> <strong>Companion</strong><span class="badge">LOCAL</span></div><span class="quiet">A space for conversation</span></header>
-  <main>
+  <header class="top"><div><span class="mark">✳</span> <strong>Companion</strong><span class="badge">LOCAL</span></div><div><span class="quiet">A space for conversation</span><button id="workspace-toggle" type="button" class="subtle" aria-controls="workspace-pane" aria-expanded="false" title="Show or hide files and notes">Workspace</button></div></header>
+  <main class="workspace-hidden">
     <section class="chat" id="conversation-pane" aria-label="Conversation">
       <div class="section-head"><div><h1>Let's talk.</h1><p>Your conversation, at your pace.</p></div><button id="new-chat" class="subtle">New chat</button></div>
       <div id="messages" role="log" aria-label="Chat messages" aria-live="polite"></div>
       <p id="chat-error" class="error" role="alert"></p>
       <form id="chat-form"><label class="sr-only" for="message">Message</label><textarea id="message" placeholder="What's on your mind?" rows="2" maxlength="12000" required></textarea><div class="composer-bottom"><span id="chat-status" role="status">Ready when you are</span><div><button id="stop" type="button" class="subtle" hidden>Stop</button><button id="send" type="submit">Send ↗</button></div></div></form>
     </section>
-    <div id="pane-divider" role="separator" aria-label="Resize conversation panes" aria-orientation="vertical" aria-controls="conversation-pane workspace-pane" tabindex="0" title="Drag or use arrow keys to resize. Double-click to reset."></div>
-    <aside id="workspace-pane" aria-label="Companion files">
-      <div class="section-head"><div><h2>Behind the conversation</h2><p>Make this space your own.</p></div></div>
+    <div id="pane-divider" role="separator" aria-label="Resize conversation panes" aria-orientation="vertical" aria-controls="conversation-pane workspace-pane" tabindex="0" title="Drag or use arrow keys to resize. Double-click to reset." hidden></div>
+    <button id="workspace-backdrop" type="button" aria-label="Close workspace" tabindex="-1" hidden></button>
+    <aside id="workspace-pane" aria-label="Companion files" hidden>
+      <div class="section-head"><div><h2>Behind the conversation</h2><p>Make this space your own.</p></div><button id="workspace-close" type="button" class="subtle" aria-label="Hide workspace" title="Hide workspace">×</button></div>
       <div class="workspace-tabs" role="tablist" aria-label="Companion workspace"><button id="files-tab" role="tab" aria-selected="true" aria-controls="files-panel">Files</button><button id="notes-tab" role="tab" aria-selected="false" aria-controls="notes-panel">Notes</button></div>
       <section id="files-panel" class="workspace-panel" role="tabpanel" aria-labelledby="files-tab">
       <nav id="file-tabs" aria-label="Files"><button data-file="identity.md" aria-pressed="true">identity.md</button><button data-file="soul.md" aria-pressed="false">soul.md</button><button data-file="memory.md" aria-pressed="false">memory.md</button></nav>
