@@ -129,4 +129,18 @@ Remember appends a short fact to core memory without replacing the document;
 forget removes an exact saved line. Neither operation erases chat history.
 The clock accepts an IANA time zone and defaults to America/Toronto.
 Detailed note editing continues to use the existing memory-provider tools.
-Web browsing and message delivery are not enabled by this toolkit.
+Message delivery and computer control are not enabled by this toolkit.
+
+## Public web access
+
+- `web_search` performs a bounded search through OpenRouter's web-search server
+  tool, using the configured model and existing server-side key. Each invocation
+  allows one search with up to three results and uses OpenRouter credits in
+  addition to model tokens. Only the search query is sent to the search helper.
+- `web_fetch` uses Eve's public-URL reader. It validates destinations and
+  redirects against private-network access, reads without a logged-in browser,
+  and returns bounded page content.
+
+Try “Search the web for Eve's current documentation” or “Read this URL: …”.
+Retrieved text is reference material, not trusted instructions. Web access
+does not enable browser interaction, account sign-in, or computer control.
