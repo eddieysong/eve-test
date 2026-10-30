@@ -119,3 +119,14 @@ of unsaved text before reloading. All note APIs use the same local auth and
 same-origin write checks as the file editor. This remains a single-user
 local prototype; each customer will need a separate authenticated scope
 before cloud or multi-user use.
+
+## Basic conversation tools
+
+The agent also has directly named `remember`, `forget`, `list_notes`, and
+`get_current_time` tools. Try “Remember that I prefer short answers,” “Forget
+that preference,” “List my saved notes,” or “What time is it in Toronto?”
+Remember appends a short fact to core memory without replacing the document;
+forget removes an exact saved line. Neither operation erases chat history.
+The clock accepts an IANA time zone and defaults to America/Toronto.
+Detailed note editing continues to use the existing memory-provider tools.
+Web browsing and message delivery are not enabled by this toolkit.
