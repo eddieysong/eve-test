@@ -1,138 +1,146 @@
-# eve-test
+# Companion prototype
 
-A minimal Eve skeleton for a personal AI companion experiment.
+An Eve companion using **OpenRouter directly**. Identity and soul start as
+placeholders; no character or personal memories are invented for you.
 
-The character is deliberately unfinished. Start by editing
-[identity.md](agent/instructions/identity.md) and
-[soul.md](agent/instructions/soul.md).
+## This first slice
 
-## What is wired up
+- Browser chat with streaming replies, stop, and new conversation.
+- Resume the current conversation after a page reload in the same browser.
+- Edit `identity.md`, `soul.md`, and `memory.md` beside the conversation.
+- Core memory tools maintain the short, always-loaded `memory.md`.
+- A Notes panel and note tools save, search, read, edit, and delete detailed notes.
+- Memory is recalled in new conversations; identity updates apply on the next
+  model call without restarting Eve.
 
-| File | Purpose |
-| --- | --- |
-| `agent/instructions.md` | Basic conversation behavior |
-| `agent/instructions/identity.md` | Who the character is |
-| `agent/instructions/soul.md` | Self-concept, values, voice, and relationship style |
-| `agent/agent.ts` | Model and usage configuration |
-| `agent/channels/eve.ts` | Authenticated HTTP session transport |
-| `scripts/chat.mjs` | Minimal client for trying a conversation |
-| `vercel.json` | Vercel build configuration |
+This version is **local first**. Cloud browser sign-in and durable cloud file
+storage are the next step. It deliberately rejects editing outside `eve dev`
+and refuses to write local files on Vercel. The previously deployed service
+continues to run its earlier source until explicitly replaced.
 
-Eve automatically composes the root instructions with the Markdown files in
-`agent/instructions/`. Directory entries load alphabetically as system instructions
-on every model call. These filenames are an authoring convention; no custom loader
-or instruction telling the model to read files is needed.
-
-## Local setup
+## Run locally
 
 Requires Node.js 24.
 
 ```sh
-git clone https://github.com/eddieysong/eve-test.git
-cd eve-test
 npm ci
-# Create .env.local only if it does not already exist.
+# If .env.local does not exist:
 [ -f .env.local ] || cp .env.example .env.local
-# Set OPENROUTER_API_KEY in .env.local, then:
+# Add OPENROUTER_API_KEY to .env.local, then:
 npm run dev
 ```
 
-Model calls go directly to OpenRouter using `OPENROUTER_API_KEY`. Vercel AI
-Gateway is not used for inference; no Vercel model billing setup is required.
-The default model is `anthropic/claude-sonnet-5`. Change `OPENROUTER_MODEL` in
-`.env.local` to try another OpenRouter model. The context budget defaults to
-200,000 tokens; set `OPENROUTER_CONTEXT_WINDOW` at or below the selected model's
-supported context length. Restart the dev server after changing environment variables.
-
-If you already have `.env.local`, add these values without overwriting its other
-entries. Keep the key server-side and never commit it. `eve link` is optional for
-local conversations; it is used when accessing or deploying the Vercel service.
-
-The terminal supports conversation directly. From a second terminal in this folder:
+Open the URL printed by Eve, normally <http://127.0.0.1:2000>.
+For a second checkout running alongside the original:
 
 ```sh
-npm run chat -- "Hello. Let's talk about who you are."
+npm run dev -- --port 2001
 ```
 
-To continue the same conversation, use the session ID printed by the client:
+The dev script bundles the browser client and disables Eve's default development
+extensions. It sets `COMPANION_DATA_DIR` to the checkout's `.companion/` folder.
+Set that variable to an absolute path to reuse another private data folder.
+Restart dev after editing `web/client.js`; Markdown edits in the UI need no restart.
+
+The CLI client remains available:
 
 ```sh
-EVE_SESSION_ID='the-printed-session-id' npm run chat -- "What would you like your name to be?"
+npm run chat -- "Hello"
 ```
 
-The CLI itself reads environment variables from its process; it doesn't load
-`.env.local`. The Eve server loads its own credentials.
+Use `EVE_URL=http://127.0.0.1:2001` when testing a nondefault port.
 
-## Deploy and test on Vercel
+## Where your files live
 
-Project: https://vercel.com/eddieysongs-projects/eve-test
+`agent/lib/templates/identity.md` and `soul.md` are public starter templates.
+The editor shows a template until you save a private override.
 
-Before deploying this version, add `OPENROUTER_API_KEY` to the project's
-Production and Preview environment variables. Optionally add `OPENROUTER_MODEL`
-and `OPENROUTER_CONTEXT_WINDOW` to override the defaults. Redeploy after changing
-environment variables. Local `.env.local` credentials are not uploaded.
+Saved `identity.md`, `soul.md`, and `memory.md` live in **`.companion/`**.
+That folder is Git-ignored. Back it up yourself; this prototype has no version
+history or automatic backup. Never commit personal memories or transcripts to
+this public repository.
 
-The initial deployment was uploaded directly. Git-based automatic deployments
-are not connected yet. To deploy from your checkout, link the existing `eve-test`
-project in the personal workspace, then deploy:
+Each file is limited to 16 KiB. Saves compare the version you opened with the
+current version, so a stale editor or agent cannot silently overwrite another
+change. Reload and reconcile after a conflict. Files persist across restarts.
+A killed writer can leave a `.lock` directory; stop all writers before removing
+that lock from the data folder.
+
+Only the user edits identity and soul. The agent receives `memory__read_memory`
+and `memory__update_memory` tools for `memory.md`. Saved memory enters as user
+context, never system instructions. Ask it to remember or forget something;
+successful writes are visible in the chat's tool activity and the memory editor.
+There is no semantic search or automatic background extraction yet.
+
+Conversation events and the current session cursor are cached in this browser's
+local storage. Eve stores session history separately. `New chat` starts a new
+conversation and leaves shared memory intact. Dev sessions from a prior server
+invocation may require a new chat after restarting; the Markdown files persist.
+
+## Checks
 
 ```sh
-npx eve link
-npx eve deploy
+npm run typecheck
+npm test
+npm run build
 ```
 
-If linking refreshes `.env.local`, ensure your OpenRouter settings remain present
-before running locally again. On Vercel, Eve writes its deployment bundle to
-`.vercel/output`. Vercel hosts the agent; OpenRouter handles model inference.
+The UI is served by an authenticated Eve channel; no extra frontend server or
+browser API key is needed. File routes accept only the three named documents
+and require local development auth. Editing requires the same origin.
+Existing Vercel OIDC authentication remains on Eve's session routes.
 
-Production URL: https://eve-test-eddieysongs-projects.vercel.app
+Proactive messaging, cron tasks, computer use, and deeper retrieval are later
+increments. Default agent tools remain disabled.
 
-The existing production and preview deployments still contain the earlier
-Gateway configuration until this change is deployed. Do not use the earlier
-preview URL to test OpenRouter.
+## Detailed notes
 
-The service exposes `/eve/v1/health` and authenticated session routes, without a
-browser chat UI. The HTTP channel accepts Vercel OIDC and local development auth.
-Vercel OIDC authenticates callers to the agent; it is independent of OpenRouter's
-API key. Deployment Protection and agent route authentication are separate checks.
+The Notes tab shows saved notes with a title, Markdown body, tags, timestamps,
+and whether they came from a conversation. Try asking:
 
-After creating a new preview deployment, use its URL with the script:
+> Save a note titled “Companion project” about the decisions we made today.
 
-```sh
-EVE_URL=https://YOUR-NEW-PREVIEW.vercel.app \
-  node --env-file=.env.local scripts/chat.mjs "Hello. Who are you?"
-```
+Then start a new chat and ask it to find that note. The agent has
+`memory__save_note`, `memory__search_notes`, `memory__read_note`,
+`memory__update_note`, and `memory__delete_note`. Search uses case-insensitive
+words across titles, tags, and bodies, returning at most 50 summaries; the
+agent reads full notes only when needed. There are no embeddings or automatic
+background extraction yet.
 
-The script uses `VERCEL_OIDC_TOKEN` from the linked project's development
-credentials for agent authentication and Vercel's trusted OIDC header. Development
-credentials normally target that project's previews; production may require an
-explicit Trusted Sources policy. Only the client runs locally in this example.
+Notes are local records in `.companion/notes/<id>.json`. Each body is limited
+to 16 KiB. They are separate from the always-loaded `memory.md` and survive
+restarts. Deletion removes the title and content and leaves an ID-only
+tombstone to prevent an old save request from bringing it back. Earlier
+conversation transcripts are not erased by deleting a note.
 
-## Memory and scope
+The editor uses version checks to prevent overwriting a newer agent edit.
+If a conflict occurs, reopen the note and reconcile your edits. Keep a copy
+of unsaved text before reloading. All note APIs use the same local auth and
+same-origin write checks as the file editor. This remains a single-user
+local prototype; each customer will need a separate authenticated scope
+before cloud or multi-user use.
 
-Eve manages ongoing conversation sessions. This skeleton does not configure a
-separate persistent memory store across sessions or let the character edit its own
-identity files. Those are explicit future design decisions.
+## Basic conversation tools
 
-No tools, publishing integrations, schedules, or custom subagents are enabled.
-Do not put private conversation logs or personal memories in this public repository.
+The agent also has directly named `remember`, `forget`, `list_notes`, and
+`get_current_time` tools. Try “Remember that I prefer short answers,” “Forget
+that preference,” “List my saved notes,” or “What time is it in Toronto?”
+Remember appends a short fact to core memory without replacing the document;
+forget removes an exact saved line. Neither operation erases chat history.
+The clock accepts an IANA time zone and defaults to America/Toronto.
+Detailed note editing continues to use the existing memory-provider tools.
+Message delivery and computer control are not enabled by this toolkit.
 
-## Verification status
+## Public web access
 
-The OpenRouter version installs and builds successfully with Eve 0.88.0. A mocked
-model call verified that the configured agent sends requests directly to
-`https://openrouter.ai/api/v1/chat/completions` with `OPENROUTER_API_KEY` and parses
-the response. A live OpenRouter reply has not been tested because no key was
-provided. The production and preview deployments of the earlier Gateway version
-reached READY on October 29, 2026; this provider change still needs deployment
-with the OpenRouter key configured.
+- `web_search` performs a bounded search through OpenRouter's web-search server
+  tool, using the configured model and existing server-side key. Each invocation
+  allows one search with up to three results and uses OpenRouter credits in
+  addition to model tokens. Only the search query is sent to the search helper.
+- `web_fetch` uses Eve's public-URL reader. It validates destinations and
+  redirects against private-network access, reads without a logged-in browser,
+  and returns bounded page content.
 
-The local build warns that no production sandbox provider is available without
-Docker or Vercel. This companion has default tools disabled and uses no sandbox
-tools. Build for the target environment when deploying.
-
-Dependencies are locked in `package-lock.json`. Read the installed
-`node_modules/eve/docs` when making API changes.
-
-Docs: https://eve.dev/docs/agent-config and
-https://eve.dev/docs/guides/deployment/vercel
+Try “Search the web for Eve's current documentation” or “Read this URL: …”.
+Retrieved text is reference material, not trusted instructions. Web access
+does not enable browser interaction, account sign-in, or computer control.

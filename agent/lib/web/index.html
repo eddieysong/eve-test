@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Companion</title><link rel="stylesheet" href="/companion/style">
+  <script type="module" src="/companion/client"></script>
+</head>
+<body>
+  <header class="top"><div><span class="mark">✳</span> <strong>Companion</strong><span class="badge">LOCAL</span></div><span class="quiet">A space for conversation</span></header>
+  <main>
+    <section class="chat" id="conversation-pane" aria-label="Conversation">
+      <div class="section-head"><div><h1>Let's talk.</h1><p>Your conversation, at your pace.</p></div><button id="new-chat" class="subtle">New chat</button></div>
+      <div id="messages" role="log" aria-label="Chat messages" aria-live="polite"></div>
+      <p id="chat-error" class="error" role="alert"></p>
+      <form id="chat-form"><label class="sr-only" for="message">Message</label><textarea id="message" placeholder="What's on your mind?" rows="2" maxlength="12000" required></textarea><div class="composer-bottom"><span id="chat-status" role="status">Ready when you are</span><div><button id="stop" type="button" class="subtle" hidden>Stop</button><button id="send" type="submit">Send ↗</button></div></div></form>
+    </section>
+    <div id="pane-divider" role="separator" aria-label="Resize conversation panes" aria-orientation="vertical" aria-controls="conversation-pane workspace-pane" tabindex="0" title="Drag or use arrow keys to resize. Double-click to reset."></div>
+    <aside id="workspace-pane" aria-label="Companion files">
+      <div class="section-head"><div><h2>Behind the conversation</h2><p>Make this space your own.</p></div></div>
+      <div class="workspace-tabs" role="tablist" aria-label="Companion workspace"><button id="files-tab" role="tab" aria-selected="true" aria-controls="files-panel">Files</button><button id="notes-tab" role="tab" aria-selected="false" aria-controls="notes-panel">Notes</button></div>
+      <section id="files-panel" class="workspace-panel" role="tabpanel" aria-labelledby="files-tab">
+      <nav id="file-tabs" aria-label="Files"><button data-file="identity.md" aria-pressed="true">identity.md</button><button data-file="soul.md" aria-pressed="false">soul.md</button><button data-file="memory.md" aria-pressed="false">memory.md</button></nav>
+      <p id="file-description" class="file-description"></p>
+      <label class="sr-only" for="file-content">File contents</label><textarea id="file-content" spellcheck="false" disabled></textarea>
+      <div class="file-actions"><span id="file-status" role="status">Loading…</span><div><button id="reload-file" class="subtle">Reload</button><button id="save-file" disabled>Save changes</button></div></div>
+      <p id="file-error" class="error" role="alert"></p><p class="footnote">Private local files · Changes apply on the next message.<br>Memory carries across new chats and server restarts.</p>
+      </section>
+      <section id="notes-panel" class="workspace-panel" role="tabpanel" aria-labelledby="notes-tab" hidden>
+        <p class="file-description">Detailed notes, found when needed. Core memory stays in memory.md.</p>
+        <form id="note-search-form" class="notes-search"><label class="sr-only" for="note-search">Search notes</label><input id="note-search" placeholder="Search notes…" maxlength="200"><button type="submit" class="subtle">Search</button><button id="new-note" type="button">New note</button></form>
+        <p id="notes-summary" role="status"></p>
+        <ul id="notes-list" aria-label="Saved notes"></ul>
+        <form id="note-form">
+          <label for="note-title">Title</label><input id="note-title" maxlength="120" placeholder="Give this note a title" required>
+          <label for="note-body">Note</label><textarea id="note-body" placeholder="Details worth keeping…" maxlength="16384" required></textarea>
+          <label for="note-tags">Tags <span class="quiet">(comma separated)</span></label><input id="note-tags" placeholder="project, ideas" maxlength="330">
+          <p id="note-metadata" class="footnote"></p>
+          <div class="file-actions"><span id="note-status" role="status">New note</span><div><button id="delete-note" type="button" class="subtle" hidden>Delete</button><button id="save-note" type="submit" disabled>Save note</button></div></div>
+        </form>
+        <p id="note-error" class="error" role="alert"></p>
+      </section>
+    </aside>
+  </main>
+</body>
+</html>

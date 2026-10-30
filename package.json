@@ -7,11 +7,13 @@
     "node": "24.x"
   },
   "scripts": {
-    "dev": "eve dev",
-    "build": "eve build",
+    "dev": "node scripts/dev.mjs",
+    "build": "npm run build:web && eve build",
     "start": "eve start",
     "chat": "node scripts/chat.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:web": "node scripts/build-web.mjs",
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@openrouter/ai-sdk-provider": "3.1.0",
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
-    "typescript": "7.0.2"
+    "typescript": "7.0.2",
+    "esbuild": "0.28.2"
   }
 }
