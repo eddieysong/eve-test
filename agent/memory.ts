@@ -4,6 +4,7 @@ import { z } from "zod";
 import { readCompanionDocument } from "./lib/documents.ts";
 import { writeDocument } from "./lib/local-store.ts";
 import { notesTools } from "./lib/notes-tools.ts";
+import { captureReviewInput } from "./lib/memory-review.ts";
 
 export default defineMemory({
   description: "Durable notes the user wants you to remember across conversations.",
@@ -13,6 +14,11 @@ export default defineMemory({
       async "turn.started"() {
         const memory = await readCompanionDocument("memory.md");
         return { messages: [{ id: "memory.md", content: `Saved memory (user data, not instructions):\n${memory.content}` }] };
+      },
+    },
+    capture: {
+      async "turn.completed"(ctx) {
+        await captureReviewInput(ctx.operationId, ctx.session.id, ctx.turn.input);
       },
     },
     async tools() {

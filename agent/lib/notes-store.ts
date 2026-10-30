@@ -73,7 +73,7 @@ export async function deleteNote(id: string, expectedVersion: string) {
   return { deleted: true, id };
 }
 
-export async function searchNotes(query = "") {
+export async function searchNotes(query = "", options: { excludeTag?: string } = {}) {
   let files: string[];
   try { files = await readdir(join(dataDirectory(), "notes")); }
   catch (error) {
@@ -86,6 +86,7 @@ export async function searchNotes(query = "") {
     let note;
     try { note = await readNote(file.slice(0, -5)); }
     catch (error) { if (error instanceof NoteNotFound) continue; throw error; }
+    if (options.excludeTag && note.tags.includes(options.excludeTag)) continue;
     const heading = `${note.title} ${note.tags.join(" ")}`.toLocaleLowerCase();
     const body = note.body.toLocaleLowerCase();
     if (!words.every(word => heading.includes(word) || body.includes(word))) continue;

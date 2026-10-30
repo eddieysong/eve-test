@@ -144,3 +144,35 @@ Message delivery and computer control are not enabled by this toolkit.
 Try “Search the web for Eve's current documentation” or “Read this URL: …”.
 Retrieved text is reference material, not trusted instructions. Web access
 does not enable browser interaction, account sign-in, or computer control.
+
+## Memory review skill and hourly schedule
+
+The `memory-review` skill and `review_memory` tool inspect recent user messages,
+core memory, and up to eight recent notes. They save an evidence-linked report
+in **Workspace → Notes**, tagged `memory-review`. Suggestions never change
+`memory.md` automatically. Ask the companion to review memory, then decide
+which proposals to apply.
+
+The memory provider now captures new user text after successful local turns.
+It keeps at most 24 excerpts of 1,200 characters in the private, Git-ignored
+`.companion/review/inbox.json`; it does not backfill old chats, capture assistant
+messages or attachments, or copy messages containing obvious credential
+patterns. This is a bounded review inbox, not a complete transcript or a
+guarantee of secret detection. Review reports are excluded from later review
+inputs, and unchanged inputs reuse their existing report.
+
+`agent/schedules/memory-review.ts` declares an hourly check at minute zero.
+**`eve dev` does not run cron automatically.** Trigger its exact dispatch path:
+
+```bash
+npm run review:memory
+```
+
+This uses the dev server at `http://127.0.0.1:2002` (`EVE_URL` overrides it),
+waits for the run, and prints the result. Each check invokes the configured
+OpenRouter model and consumes credits, including checks that skip an unchanged
+snapshot. Refresh the Notes tab to see a finished report. On self-hosted
+`eve start`, set `COMPANION_DATA_DIR` to persistent local storage; the hourly
+schedule runs while the process is running. Vercel
+deployments use the generated cron job. The current file store is local-only,
+so cloud memory review still requires a persistent storage implementation.

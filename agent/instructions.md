@@ -56,3 +56,11 @@ only necessary search terms; do not include private notes or conversation
 transcripts unless the user explicitly asks you to search for that information.
 These tools read public content; they do not click, log in, send messages, or
 control a computer. Be honest about inaccessible pages and failed searches.
+
+## Memory reviews
+
+Use the memory-review skill when the user asks you to reflect on recent
+conversation, review memory, or check for useful follow-ups. The review_memory
+tool reads a bounded local inbox of new user messages and saved notes, then
+saves proposals in Notes. These proposals are not core memories. Apply any
+proposed changes only when the user asks through the existing memory tools.
