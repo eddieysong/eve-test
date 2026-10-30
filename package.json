@@ -10,12 +10,17 @@
     "dev": "eve dev",
     "build": "eve build",
     "start": "eve start",
-    "chat": "node scripts/chat.mjs"
+    "chat": "node scripts/chat.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@openrouter/ai-sdk-provider": "3.1.0",
     "ai": "^7.0.137",
-    "eve": "0.88.0",
-    "zod": "4.5.4"
+    "eve": "^0.88.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "7.0.2"
   }
 }

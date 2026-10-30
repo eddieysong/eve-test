@@ -7,3 +7,4 @@ node_modules/
 .output/
 dist/
 .DS_Store
+.vercel
